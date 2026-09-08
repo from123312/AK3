@@ -11,7 +11,7 @@
 [![SUSFS](https://img.shields.io/badge/SUSFS-Integrated-E67E22?style=flat-square)](https://gitlab.com/simonpunk/susfs4ksu)
 [![GitHub Actions](https://img.shields.io/badge/Build-GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)](../../actions)
 
-**English** | [简体中文](#简体中文)
+[**English**](README-EN.md) | 简体中文
 
 </div>
 
