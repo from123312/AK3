@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
-# 应用 SUSFS 补丁 + 各内核版本特定的上下文修复。
-# 从 build.yml 抽取，逐字保留原逻辑（仅将 ${{ inputs.X }} 改为 env 变量）。
-#
-# 依赖环境变量（由 build.yml 通过 env 传入或 GITHUB_ENV 继承）：
-#   ANDROID_VERSION KERNEL_VERSION KSU_VARIANT OS_PATCH_LEVEL SUB_LEVEL
-#   KERNEL_ROOT SUSFS4KSU KERNEL_PATCHES LEGACY_SUKISU_CONFIG
-# 工作目录：$KERNEL_ROOT（与原 step 的 working-directory 一致）
+          #!/usr/bin/env bash
+          # 应用 SUSFS 补丁 + 各内核版本特定的上下文修复。
+          # 从 build.yml 抽取，逐字保留原逻辑（仅将 ${{ inputs.X }} 改为 env 变量）。
+          #
+          # 依赖环境变量（由 build.yml 通过 env 传入或 GITHUB_ENV 继承）：
+          #   ANDROID_VERSION KERNEL_VERSION KSU_VARIANT OS_PATCH_LEVEL SUB_LEVEL
+          #   KERNEL_ROOT SUSFS4KSU KERNEL_PATCHES LEGACY_SUKISU_CONFIG
+          # 工作目录：$KERNEL_ROOT（与原 step 的 working-directory 一致）
           set -eo pipefail
 
           echo "应用 SUSFS 补丁..."
