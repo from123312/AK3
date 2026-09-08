@@ -16,7 +16,10 @@ GKI Kernel |  KernelSU/KernelSU-Next/SukiSU/ReSukiSU
 
 </div>
 
----
+## Introduction
+1. This repository uses the GitHub Actions workflows from [zzh20188](https://github.com/zzh20188/GKI_KernelSU_SUSFS) & [Wild Kernels](https://github.com/WildKernels/GKI_KernelSU_SUSFS) for compilation.
+3. Flashing rule: ***It can be flashed as long as the kernel version matches.***
+
 <div align="center">
 
 ## ⚠️ Disclaimer
