@@ -2,7 +2,7 @@
 
 # GKI KernelSU SUSFS
 
-###  Kernels · KernelSU / KernelSU-Next / SukiSU / ReSukiSU + SUSFS
+**Automated GKI Kernel Builds | KernelSU / KernelSU-Next / SukiSU / ReSukiSU + SUSFS Integration**
 
 [![Release](https://img.shields.io/github/v/release/LingLuo17/AnyKernel3?label=Release&style=flat-square&logo=github&logoColor=white&color=2ea44f)](https://github.com/LingLuo17/AnyKernel3/releases)
 [![KernelSU](https://img.shields.io/badge/KernelSU-Supported-5AA300?style=flat-square)](https://kernelsu.org/)
@@ -122,7 +122,7 @@ Flashing this kernel will not void your warranty, but there is always a risk of 
 
 # GKI KernelSU SUSFS
 
-### 小米内核 · KernelSU / KernelSU-Next / SukiSU / ReSukiSU + SUSFS
+**自动化构建 GKI 内核 | 集成 KernelSU/KernelSU-Next/SukiSU/ReSukiSU + SUSFS**
 
 [English](#gki-kernelsu-susfs) | **简体中文**
 
