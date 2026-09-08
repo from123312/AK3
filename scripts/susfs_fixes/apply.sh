@@ -371,16 +371,16 @@ if [ -f "$KERNEL_ROOT/common/fs/exec.c" ] && grep -qF 'ksu_install_su_fd' "$KERN
     cat >> "$STUB_TARGET" <<'KSU_STUB_EOF'
 
 /*
- * SUSFS GKI 补丁 (fs/exec.c) 引用的符号：仅 KernelSU 官方版 (supercall.c) 提供。
- * SukiSU 系变体的提权在 ksu_handle_execveat_sucompat() 内部完成，
- * 无需单独安装 su fd，这里提供空实现仅用于满足链接。
- */
+* SUSFS GKI 补丁 (fs/exec.c) 引用的符号：仅 KernelSU 官方版 (supercall.c) 提供。
+* SukiSU 系变体的提权在 ksu_handle_execveat_sucompat() 内部完成，
+* 无需单独安装 su fd，这里提供空实现仅用于满足链接。
+*/
  int ksu_install_su_fd(void)
- {
+{
    return 0;
- }
+}
  KSU_STUB_EOF
      echo "已向 $STUB_TARGET 注入 ksu_install_su_fd 兼容实现"
-   done
-   fi
+  done
+fi
    
