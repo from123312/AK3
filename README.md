@@ -2,14 +2,14 @@
 
 # GKI KernelSU SUSFS
 
-### Xiaomi Kernels · KernelSU / KernelSU-Next / SukiSU / ReSukiSU + SUSFS
+###  Kernels · KernelSU / KernelSU-Next / SukiSU / ReSukiSU + SUSFS
 
+[![Release](https://img.shields.io/github/v/release/LingLuo17/AnyKernel3?label=Release&style=flat-square&logo=github&logoColor=white&color=2ea44f)](https://github.com/LingLuo17/AnyKernel3/releases)
 [![KernelSU](https://img.shields.io/badge/KernelSU-Supported-5AA300?style=flat-square)](https://kernelsu.org/)
 [![KernelSU Next](https://img.shields.io/badge/KernelSU--Next-Supported-5AA300?style=flat-square)](https://kernelsu-next.github.io/webpage/)
 [![SukiSU](https://img.shields.io/badge/SukiSU-Supported-5AA300?style=flat-square)](https://sukisu.org/)
 [![ReSukiSU](https://img.shields.io/badge/ReSukiSU-Supported-5AA300?style=flat-square)](https://resukisu.github.io/)
 [![SUSFS](https://img.shields.io/badge/SUSFS-Integrated-E67E22?style=flat-square)](https://gitlab.com/simonpunk/susfs4ksu)
-[![GitHub Actions](https://img.shields.io/badge/Build-GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)](../../actions)
 
 **English** | [简体中文](#简体中文)
 
