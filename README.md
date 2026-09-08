@@ -11,7 +11,7 @@
 [![SUSFS](https://img.shields.io/badge/SUSFS-Integrated-E67E22?style=flat-square)](https://gitlab.com/simonpunk/susfs4ksu)
 [![GitHub Actions](https://img.shields.io/badge/Build-GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)](../../actions)
 
-[**English**](README-EN.md) | 简体中文
+**English** | [简体中文](#简体中文)
 
 </div>
 
@@ -47,6 +47,24 @@ This repository is built on [AnyKernel3](https://github.com/osm0sis/AnyKernel3) 
 | 📱 OnePlus 8E Support | Optional support for OnePlus 8E SoCs |
 | 🐳 Droidspaces | Optional container support with NTSync kernel compatibility patch |
 | 🐦 HMBird Patch | Forces the OPLUS HMBird kernel type `HMBIRD_OGKI → HMBIRD_GKI`, letting custom kernels bypass restrictions |
+
+## 🔧 Custom Commit Configuration
+
+The [`config/config`](config/config) file lets you pin specific commits for SUSFS and SukiSU.
+
+**What is a commit?**
+
+A commit is a hash string representing the state of a repository at a certain point in time. For example, setting SukiSU to `4b8644515fe6d87a109129e590ccd9d33a855dca` means the kernel will be built with the SukiSU version from January 30.
+
+**Why pin a commit?**
+
+- Roll back to a stable version when upstream updates introduce bugs or compatibility issues
+- Manually specify a compatible version when SUSFS and SukiSU are out of sync and the build fails
+
+**How to get a commit hash?**
+
+- SUSFS: [susfs4ksu](https://gitlab.com/simonpunk/susfs4ksu) (GitLab → Repository → Commits)
+- SukiSU: [SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra/commits) (GitHub commit history page)
 
 ## 🚀 Usage
 
@@ -142,6 +160,24 @@ Flashing this kernel will not void your warranty, but there is always a risk of 
 | 📱 一加 8E 支持 | 可选添加一加 8E 处理器支持 |
 | 🐳 Droidspaces | 可选容器支持及 NTSync 内核兼容补丁 |
 | 🐦 HMBird Patch | 强制 OPLUS HMBird 内核类型 `HMBIRD_OGKI → HMBIRD_GKI`，让自编内核绕过限制 |
+
+## 🔧 自定义提交配置
+
+通过 [`config/config`](config/config) 文件可以指定 SUSFS 和 SukiSU 使用特定的 commit。
+
+**什么是提交 (commit)？**
+
+提交是一串哈希字符串，代表仓库在某个时间点的状态。例如将 SukiSU 设为 `4b8644515fe6d87a109129e590ccd9d33a855dca`，即使用 1 月 30 日的 SukiSU 版本编译内核。
+
+**为什么要指定提交？**
+
+- 当上游仓库更新引入 bug 或兼容性问题时，可回退到稳定版本
+- 当 SUSFS 与 SukiSU 版本不同步导致编译失败时，可手动指定兼容的版本
+
+**如何获取提交哈希？**
+
+- SUSFS：[susfs4ksu](https://gitlab.com/simonpunk/susfs4ksu)（GitLab → Repository → Commits）
+- SukiSU：[SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra/commits)（GitHub 提交历史页面）
 
 ## 🚀 使用方法
 
