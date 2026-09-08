@@ -8,13 +8,6 @@
 # 工作目录：$KERNEL_ROOT（与原 step 的 working-directory 一致）
 set -eo pipefail
 
-for _v in ANDROID_VERSION KERNEL_VERSION KSU_VARIANT SUB_LEVEL KERNEL_ROOT SUSFS4KSU; do
-  if [ -z "${!_v:-}" ]; then
-    echo "ERROR: missing required env var: $_v" >&2
-    exit 1
-  fi
-done
-
 echo "应用 SUSFS 补丁..."
 
 SUSFS_PATCH="50_add_susfs_in_gki-${ANDROID_VERSION}-${KERNEL_VERSION}.patch"
