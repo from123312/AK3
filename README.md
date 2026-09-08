@@ -38,7 +38,7 @@ This repository is built on [AnyKernel3](https://github.com/osm0sis/AnyKernel3) 
 | Feature | Description |
 |:---|:---|
 | 🔐 KernelSU Variants | Supports Official / Next / SukiSU / ReSukiSU variants, selectable at build time |
-| 🙈 SUSFS | Filesystem-level hiding, works with KSU for environment spoofing |
+| 🙈 SUSFS | Kernel-level hiding working with KSU to complete environment spoofing |
 | 💾 ZRAM LZ4 | ZRAM compression algorithm enhancement patch stack |
 | 🛡️ BBG Brick Protection | BBG anti-brick patch to reduce partition corruption risk |
 | ⚡ KPM | Optional KPM feature / build-time patching |
@@ -105,13 +105,20 @@ A commit is a hash string representing the state of a repository at a certain po
 
 ## ⚠️ Disclaimer
 
-Flashing this kernel will not void your warranty, but there is always a risk of bricking your device. Please make sure to:
+</div>
 
-- 💾 **Back up the original boot image of your system in advance**
-- 🧠 **Fully understand the risks before proceeding**
-- If flashing AnyKernel3 causes your device to enter an infinite boot loop or fail to boot, enter BootLoader and flash the original boot image back
-- I take no responsibility for any issues caused by flashing this kernel
+- Flashing this kernel will not void your warranty, but there is always a risk of bricking your device. Please make sure to:
+- 💾 Back up your data
+- 🧠 Understand the risks before proceeding
 
+- Please make sure to back up the original boot image of this system in advance.
+
+- If flashing AnyKernel3 causes your device to enter an infinite boot loop or fail to boot, enter BootLoader and flash the original boot image back.
+
+- I take no responsibility for any issues caused by flashing this kernel.
+
+<div align="center">
+  
 # **🚨 Proceed at your own risk!**
 
 </div>
@@ -153,7 +160,7 @@ Flashing this kernel will not void your warranty, but there is always a risk of 
 | 特性 | 说明 |
 |:---|:---|
 | 🔐 KernelSU 全家桶 | 支持 Official / Next / SukiSU / ReSukiSU 四种变体，构建时按需选择 |
-| 🙈 SUSFS | 文件系统级隐藏，配合 KSU 完成环境伪装 |
+| 🙈 SUSFS | 内核级隐藏，配合 KSU 完成环境伪装 |
 | 💾 ZRAM LZ4 | ZRAM 压缩算法增强补丁栈 |
 | 🛡️ BBG 防格机 | 添加 BBG 防格机补丁，降低分区损坏风险 |
 | ⚡ KPM | 可选开启 KPM 功能 / 构建期修补 |
@@ -220,13 +227,20 @@ Flashing this kernel will not void your warranty, but there is always a risk of 
 
 ## ⚠️ 免责声明
 
-刷入内核不会使设备失去保修，但刷机始终存在变砖风险，请务必：
+</div>
 
-- 💾 **提前备份系统原始 boot 镜像**
-- 🧠 **充分了解刷机风险后再操作**
-- 若刷入 AnyKernel3 后设备无限重启或无法开机，请进入 BootLoader 刷回原始 boot 镜像
-- 因刷入本内核造成的任何问题，本人概不负责
+- 刷入内核不会使保修失效，但总有设备变砖的风险请务必:
+- 💾 备份你的数据
+- 🧠 在继续之前，了解风险
 
-# **🚨 后果自负，风险自担！**
+- 请务必提前备份该系统的原Boot镜像。
+
+- 如果刷入 AnyKernel3 导致设备进入无限启动循环或无法启动，请进入 BootLoader 并重新刷入原Boot镜像。
+
+- 我不对刷写该内核所引发的任何问题负责。
+
+<div align="center">
+  
+# **🚨  请自行承担风险！**
 
 </div>
