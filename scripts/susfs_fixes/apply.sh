@@ -1,11 +1,11 @@
-          #!/usr/bin/env bash
-          # 应用 SUSFS 补丁 + 各内核版本特定的上下文修复。
-          # 从 build.yml 抽取，逐字保留原逻辑（仅将 ${{ inputs.X }} 改为 env 变量）。
-          #
-          # 依赖环境变量（由 build.yml 通过 env 传入或 GITHUB_ENV 继承）：
-          #   ANDROID_VERSION KERNEL_VERSION KSU_VARIANT OS_PATCH_LEVEL SUB_LEVEL
-          #   KERNEL_ROOT SUSFS4KSU KERNEL_PATCHES LEGACY_SUKISU_CONFIG
-          # 工作目录：$KERNEL_ROOT（与原 step 的 working-directory 一致）
+#!/usr/bin/env bash
+# 应用 SUSFS 补丁 + 各内核版本特定的上下文修复。
+# 从 build.yml 抽取，逐字保留原逻辑（仅将 ${{ inputs.X }} 改为 env 变量）。
+#
+# 依赖环境变量（由 build.yml 通过 env 传入或 GITHUB_ENV 继承）：
+#   ANDROID_VERSION KERNEL_VERSION KSU_VARIANT OS_PATCH_LEVEL SUB_LEVEL
+#   KERNEL_ROOT SUSFS4KSU KERNEL_PATCHES LEGACY_SUKISU_CONFIG
+# 工作目录：$KERNEL_ROOT（与原 step 的 working-directory 一致）
           set -eo pipefail
 
           echo "应用 SUSFS 补丁..."
@@ -339,47 +339,9 @@
             echo "已修复 super_access.c cb_mutex 6.12 兼容"
           fi
 
-          # 修复 6.12+ lsm_hook.c: security_add_hooks 第三参数由 char* 变为 const struct lsm_id*
-          # struct lsm_id 仅 6.8+ 内核存在，老内核 (5.10~6.6) 仍是 char*，必须按内核版本门控，
-          # 否则老内核编译报 "variable has incomplete type 'struct lsm_id'"
+          # 修复 6.12 lsm_hook.c: security_add_hooks 参数类型变了
           LSM_HOOK="$KERNEL_ROOT/common/drivers/kernelsu/hook/lsm_hook.c"
-          KVER_MAJOR=$(sed -n 's/^VERSION = \([0-9]\{1,\}\)$/\1/p' "$KERNEL_ROOT/common/Makefile" | head -n1)
-          KVER_MINOR=$(sed -n 's/^PATCHLEVEL = \([0-9]\{1,\}\)$/\1/p' "$KERNEL_ROOT/common/Makefile" | head -n1)
-          if [ -n "$KVER_MAJOR" ] && [ -n "$KVER_MINOR" ] \
-            && { [ "$KVER_MAJOR" -gt 6 ] || { [ "$KVER_MAJOR" -eq 6 ] && [ "$KVER_MINOR" -ge 8 ]; }; } \
-            && [ -f "$LSM_HOOK" ] && grep -q 'security_add_hooks.*"ksu"' "$LSM_HOOK"; then
+          if [ -f "$LSM_HOOK" ] && grep -q 'security_add_hooks.*"ksu"' "$LSM_HOOK"; then
             sed -i 's/security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), "ksu")/security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), \&(struct lsm_id){"ksu", 0})/' "$LSM_HOOK"
-            echo "已修复 lsm_hook.c security_add_hooks 兼容 (内核 $KVER_MAJOR.$KVER_MINOR)"
+            echo "已修复 lsm_hook.c security_add_hooks 6.12 兼容"
           fi
-
-          # SUSFS GKI 补丁在 fs/exec.c 注入的钩子会调用 ksu_install_su_fd()，
-          # 该符号仅 KernelSU 官方版 (supercall.c) 提供，SukiSU/ReSukiSU 缺失会导致 vmlinux 链接失败；
-          # SukiSU 系变体的提权已在 ksu_handle_execveat_sucompat() 内部完成，无需单独安装 su fd，
-          # 这里仅在符号缺失时注入空实现以满足链接
-          if [ -f "$KERNEL_ROOT/common/fs/exec.c" ] && grep -qF 'ksu_install_su_fd' "$KERNEL_ROOT/common/fs/exec.c"; then
-            for KSU_SRC_DIR in "$KERNEL_ROOT/KernelSU" "$KERNEL_ROOT/KernelSU-Next"; do
-              [ -d "$KSU_SRC_DIR/kernel" ] || continue
-              if grep -rqs 'int ksu_install_su_fd(void)' "$KSU_SRC_DIR/kernel"; then
-                continue
-              fi
-              STUB_TARGET=$(grep -rls 'int ksu_handle_execveat_sucompat' "$KSU_SRC_DIR/kernel" --include='*.c' | head -n1)
-              if [ -z "$STUB_TARGET" ]; then
-                echo "::warning::未在 $KSU_SRC_DIR 中定位 ksu_handle_execveat_sucompat 定义，跳过 ksu_install_su_fd 注入"
-                continue
-              fi
-              cat >> "$STUB_TARGET" <<'KSU_STUB_EOF'
-
-          /*
-           * SUSFS GKI 补丁 (fs/exec.c) 引用的符号：仅 KernelSU 官方版 (supercall.c) 提供。
-           * SukiSU 系变体的提权在 ksu_handle_execveat_sucompat() 内部完成，
-           * 无需单独安装 su fd，这里提供空实现仅用于满足链接。
-           */
-          int ksu_install_su_fd(void)
-          {
-          	return 0;
-          }
-          KSU_STUB_EOF
-              echo "已向 $STUB_TARGET 注入 ksu_install_su_fd 兼容实现"
-            done
-          fi
-          
