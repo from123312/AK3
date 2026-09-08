@@ -5,6 +5,8 @@
 **Automated GKI Kernel Builds | KernelSU / KernelSU-Next / SukiSU / ReSukiSU + SUSFS Integration**
 
 [![Release](https://img.shields.io/github/v/release/LingLuo17/AnyKernel3?label=Release&style=flat-square&logo=github&logoColor=white&color=2ea44f)](https://github.com/LingLuo17/AnyKernel3/releases)
+[![Coolapk](https://img.shields.io/badge/Follow-Coolapk-3DDC84?style=flat-square&logo=android&logoColor=white)](http://www.coolapk.com/u/38407386)
+[<img src="https://img.shields.io/badge/Join-QQ%20Group-blue?style=flat-square&logo=github&logoColor=white">](https://qm.qq.com/q/PZIFvlcbqU)
 [![KernelSU](https://img.shields.io/badge/KernelSU-Supported-5AA300?style=flat-square)](https://kernelsu.org/)
 [![KernelSU Next](https://img.shields.io/badge/KernelSU--Next-Supported-5AA300?style=flat-square)](https://kernelsu-next.github.io/webpage/)
 [![SukiSU](https://img.shields.io/badge/SukiSU-Supported-5AA300?style=flat-square)](https://sukisu.org/)
@@ -74,7 +76,8 @@ A commit is a hash string representing the state of a repository at a certain po
    - `android_version` / `kernel_version` / `sub_level` / `os_patch_level` (kernel version quadruplet)
    - `ksu_variant`: KernelSU variant (Official / Next / SukiSU / ReSukiSU)
    - Feature switches: `enable_susfs`, `use_zram`, `use_bbg`, `use_kpm`, etc.
-4. Once the build finishes, download the **Artifacts** from the run page:
+4. [security patch level](https://zzh20188.github.io/GKI_KernelSU_SUSFS/index.html)
+5. Once the build finishes, download the **Artifacts** from the run page:
    - `AnyKernel3.zip` — flashable zip (recommended; flash via custom Recovery or KSU)
    - `boot.img` / `boot-gz.img` / `boot-lz4.img` — boot images for each compression format
 
@@ -93,6 +96,12 @@ A commit is a hash string representing the state of a repository at a certain po
 ├── hmbird_patch.c       # HMBird kernel type patch
 └── .gitattributes       # Patch file line-ending management
 ```
+
+## 🛠️ Recommended After Installation
+### 🔧 Xposed Modules
+| Module | Description |
+|:---:|:---|
+| **FuseFixer** | [Unicode zero-width character fix module](https://t.me/real5ec1cff/268) |
 
 ## 🙏 Credits
 
@@ -195,8 +204,9 @@ A commit is a hash string representing the state of a repository at a certain po
 3. 点击 **Run workflow**，按需填写参数：
    - `android_version` / `kernel_version` / `sub_level` / `os_patch_level`（内核版本四件套）
    - `ksu_variant`：KernelSU 变体（Official / Next / SukiSU / ReSukiSU）
-   - 功能开关：`enable_susfs`、`use_zram`、`use_bbg`、`use_kpm` 等
-4. 构建完成后，在本次运行页面下载 **Artifacts**：
+   - 功能开关：`enable_susfs`、`use_zram`、`use_bbg`、`use_kpm` 等 
+4. [安全补丁级别](https://zzh20188.github.io/GKI_KernelSU_SUSFS/index.html)
+5. 构建完成后，在本次运行页面下载 **Artifacts**：
    - `AnyKernel3.zip` —— 卡刷包（推荐，配合自定义 Recovery 或 KSU 刷入）
    - `boot.img` / `boot-gz.img` / `boot-lz4.img` —— 对应压缩格式的 boot 镜像
 
@@ -216,9 +226,16 @@ A commit is a hash string representing the state of a repository at a certain po
 └── .gitattributes       # 补丁文件换行管理
 ```
 
+## 🛠️ 安装后推荐
+### 🔧 Xposed 模块
+
+| 模块 | 说明 |
+|:---:|:---|
+| **FuseFixer** | [Unicode零宽修复模块](https://t.me/real5ec1cff/268) |
+
 ## 🙏 致谢
 
-- [osm0sis/AnyKernel3](https://github.com/osm0sis/AnyKernel3) — 万能刷入模板
+- [osm0sis/AnyKernel3](https://github.com/osm0sis/AnyKernel3) — 通用可刷写模板
 - [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) / [WildKernels/GKI_KernelSU_SUSFS](https://github.com/WildKernels/GKI_KernelSU_SUSFS) — 构建工作流基础
 - [KernelSU](https://kernelsu.org/) / [KernelSU-Next](https://kernelsu-next.github.io/webpage/) / [SukiSU](https://sukisu.org/) / [ReSukiSU](https://resukisu.github.io/)
 - [SUSFS](https://gitlab.com/simonpunk/susfs4ksu)
