@@ -647,7 +647,7 @@ jobs:
 
           推荐模块：https://github.com/sidex15/ksu_module_susfs
 
-          Unicode 零宽绕过修复请使用 Xposed 模块：https://github.com/5ec1cff/FuseFixer
+          Unicode 零宽绕过修复请使用 Xposed 模块：https://t.me/real5ec1cff/268
           EOF
 
       # ==================== 生成版本标签 ====================
@@ -712,15 +712,101 @@ jobs:
           done
 
       # ==================== 上传内核产物 ====================
+      # 修复：多个内核构建产物内存在同名文件（Image、anykernel.sh、LICENSE 等），
+      # 旧逻辑直接按文件名上传，从第二个产物开始会因 Release 已存在同名资产
+      # 被 GitHub 拒绝（HTTP 422 already_exists），导致本步骤失败。
+      # 新逻辑：
+      #   1. 内容完全相同的同名文件只上传一份；
+      #   2. 内容不同的同名文件自动加内核配置前缀重命名上传（如 android16-6.12-58-Image）；
+      #   3. 上传失败自动重试 3 次；
+      #   4. 没有内核产物时告警而不是报错。
       - name: 上传内核产物
         run: |
-          for file in ./downloaded-artifacts/*_kernel-*/*; do
-            [ -d "$file" ] && continue
-            # 跳过 -Rejects 目录中的文件（已在 collect-rejects 中汇总处理）
-            [[ "$file" == *-Rejects/* ]] && continue
-            echo "上传 $file..."
-            gh release upload "$NEW_TAG" "$file"
+          shopt -s nullglob
+          declare -A SEEN_HASH=()
+          # 记录 Release 中已有的资产名（兼容失败后重跑的场景）
+          gh release view "$NEW_TAG" --json assets --jq '.assets[].name' > /tmp/existing_assets.txt 2>/dev/null || : > /tmp/existing_assets.txt
+
+          upload_with_retry() {
+            local n=0
+            until gh release upload "$NEW_TAG" "$1"; do
+              n=$((n+1))
+              [ "$n" -ge 3 ] && return 1
+              echo "上传失败，进行第 $n 次重试..."
+              sleep 5
+            done
+          }
+
+          # 根据产物目录名生成前缀（如 android16-6.12-58）
+          make_prefix() {
+            local dir="$1" config
+            case "$dir" in
+              *_kernel-*AnyKernel3) config="${dir#*_kernel-}"; config="${config%-AnyKernel3}" ;;
+              *_kernel-*)           config="${dir#*_kernel-}" ;;
+              *)                    config="$dir" ;;
+            esac
+            echo "$config"
+          }
+
+          # 上传改名后的文件
+          upload_renamed() {
+            local file="$1" new_name="$2" tmpd
+            tmpd=$(mktemp -d)
+            cp "$file" "$tmpd/$new_name"
+            if upload_with_retry "$tmpd/$new_name"; then
+              echo "$new_name" >> /tmp/existing_assets.txt
+              rm -rf "$tmpd"
+              return 0
+            fi
+            rm -rf "$tmpd"
+            return 1
+          }
+
+          found=0
+          for dir in ./downloaded-artifacts/*_kernel-*; do
+            [ -d "$dir" ] || continue
+            dir_name=$(basename "$dir")
+            for file in "$dir"/*; do
+              [ -d "$file" ] && continue
+              [[ "$file" == *-Rejects/* ]] && continue
+              found=1
+              name=$(basename "$file")
+
+              # Release 中已存在同名资产（如上次失败后重跑）→ 改名上传
+              if grep -Fxq "$name" /tmp/existing_assets.txt; then
+                echo "资产 $name 已存在，以 $(make_prefix "$dir_name")-$name 重命名上传"
+                upload_renamed "$file" "$(make_prefix "$dir_name")-$name" \
+                  || { echo "::error::上传 $file 失败"; exit 1; }
+                continue
+              fi
+
+              # 同名文件已上传过：内容相同则跳过，内容不同则改名
+              if [[ -n "${SEEN_HASH[$name]:-}" ]]; then
+                cur_hash=$(sha256sum "$file" | cut -d' ' -f1)
+                if [ "$cur_hash" = "${SEEN_HASH[$name]}" ]; then
+                  echo "跳过重复文件 $file（与已上传的同名文件内容一致）"
+                  continue
+                fi
+                echo "$name 内容与之前不同，以 $(make_prefix "$dir_name")-$name 重命名上传"
+                upload_renamed "$file" "$(make_prefix "$dir_name")-$name" \
+                  || { echo "::error::上传 $file 失败"; exit 1; }
+                continue
+              fi
+
+              echo "上传 $file..."
+              if upload_with_retry "$file"; then
+                echo "$name" >> /tmp/existing_assets.txt
+                SEEN_HASH[$name]=$(sha256sum "$file" | cut -d' ' -f1)
+              else
+                echo "::error::上传 $file 失败"
+                exit 1
+              fi
+            done
           done
+
+          if [ "$found" -eq 0 ]; then
+            echo "::warning::未找到任何内核产物（*_kernel-*），跳过上传"
+          fi
 
       # ==================== 构建摘要 ====================
       - name: 构建摘要
