@@ -101,7 +101,7 @@ A commit is a hash string representing the state of a repository at a certain po
 ### 🔧 Xposed Modules
 | Module | Description |
 |:---:|:---|
-| **FuseFixer** | [Unicode zero-width character fix module](https://t.me/real5ec1cff/268) |
+| **FuseFixer** | [Unicode zero-width character fix module](https://github.com/5ec1cff/FuseFixer) |
 
 ## 🙏 Credits
 
@@ -231,7 +231,7 @@ A commit is a hash string representing the state of a repository at a certain po
 
 | 模块 | 说明 |
 |:---:|:---|
-| **FuseFixer** | [Unicode零宽修复模块](https://t.me/real5ec1cff/268) |
+| **FuseFixer** | [Unicode零宽修复模块](https://github.com/5ec1cff/FuseFixer) |
 
 ## 🙏 致谢
 
