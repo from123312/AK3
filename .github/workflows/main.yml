@@ -40,7 +40,7 @@ on:
           - SukiSU
           - ReSukiSU
           - Official
-          - Next
+          #- Next
         default: ReSukiSU
 
       # ==================== 可选配置 ====================
@@ -355,7 +355,7 @@ jobs:
   # ==================== 创建发布 ====================
   # 当 release_type 不是 Actions 时，创建 GitHub Release
   release:
-    if: ${{ always() && !cancelled() && inputs.release_type != 'Actions' && github.repository == 'LingLuo17/AnyKernel3' }}
+    if: ${{ always() && !cancelled() && inputs.release_type != 'Actions' && github.repository == 'from123312/AnyKernel3' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -618,7 +618,7 @@ jobs:
 
           1. 恢复原厂 Boot 镜像
           2. 使用 KernelSU 管理器或 recovery 提取日志
-          3. 提交到 [Issues](https://github.com/LingLuo17/AnyKernel3/issues)，并附上设备型号、Android 版本、内核版本和刷入文件名
+          3. 提交到 [Issues](https://github.com/from123312/AnyKernel3/issues)，并附上设备型号、Android 版本、内核版本和刷入文件名
 
           </details>
 
