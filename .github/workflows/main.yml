@@ -647,7 +647,7 @@ jobs:
 
           推荐模块：https://github.com/sidex15/ksu_module_susfs
 
-          Unicode 零宽绕过修复请使用 Xposed 模块：https://t.me/real5ec1cff/268
+          Unicode 零宽绕过修复请使用 Xposed 模块：https://github.com/5ec1cff/FuseFixer
           EOF
 
       # ==================== 生成版本标签 ====================
