@@ -40,7 +40,7 @@ on:
           - SukiSU
           - ReSukiSU
           - Official
-          - Next
+          #- Next
         default: ReSukiSU
 
       # ==================== 可选配置 ====================
@@ -76,14 +76,6 @@ on:
         description: "启用 Droidspaces 容器 NTSync 支持（需启用 Droidspaces）"
         type: boolean
         default: false
-      artifact_upload_mode:
-        description: "构建产物上传模式"
-        required: true
-        type: choice
-        options:
-          - "仅上传 AnyKernel3.zip"
-          - "上传全部"
-        default: "仅上传 AnyKernel3.zip"
 
       # ==================== 功能开关 ====================
       use_zram:
@@ -158,7 +150,7 @@ jobs:
       cve_2026_43499_patch: ${{ inputs.cve_2026_43499_patch }}
       cancel_susfs: ${{ inputs.cancel_susfs }}
       droidspaces: ${{ inputs.droidspaces }}
-      artifact_upload_mode: ${{ inputs.artifact_upload_mode }}
+      artifact_upload_mode: "上传全部"
       droidspaces_ntsync: ${{ inputs.droidspaces_ntsync }}
       called_from_main: true
 
@@ -178,7 +170,7 @@ jobs:
       cve_2026_43499_patch: ${{ inputs.cve_2026_43499_patch }}
       cancel_susfs: ${{ inputs.cancel_susfs }}
       droidspaces: ${{ inputs.droidspaces }}
-      artifact_upload_mode: ${{ inputs.artifact_upload_mode }}
+      artifact_upload_mode: "上传全部"
       droidspaces_ntsync: ${{ inputs.droidspaces_ntsync }}
       called_from_main: true
 
@@ -198,7 +190,7 @@ jobs:
       cve_2026_43499_patch: ${{ inputs.cve_2026_43499_patch }}
       cancel_susfs: ${{ inputs.cancel_susfs }}
       droidspaces: ${{ inputs.droidspaces }}
-      artifact_upload_mode: ${{ inputs.artifact_upload_mode }}
+      artifact_upload_mode: "上传全部"
       droidspaces_ntsync: ${{ inputs.droidspaces_ntsync }}
       called_from_main: true
 
@@ -218,7 +210,7 @@ jobs:
       cve_2026_43499_patch: ${{ inputs.cve_2026_43499_patch }}
       cancel_susfs: ${{ inputs.cancel_susfs }}
       droidspaces: ${{ inputs.droidspaces }}
-      artifact_upload_mode: ${{ inputs.artifact_upload_mode }}
+      artifact_upload_mode: "上传全部"
       droidspaces_ntsync: ${{ inputs.droidspaces_ntsync }}
       called_from_main: true
 
@@ -238,7 +230,7 @@ jobs:
       cve_2026_43499_patch: ${{ inputs.cve_2026_43499_patch }}
       cancel_susfs: ${{ inputs.cancel_susfs }}
       droidspaces: ${{ inputs.droidspaces }}
-      artifact_upload_mode: ${{ inputs.artifact_upload_mode }}
+      artifact_upload_mode: "上传全部"
       droidspaces_ntsync: ${{ inputs.droidspaces_ntsync }}
       called_from_main: true
 
@@ -712,14 +704,20 @@ jobs:
           done
 
       # ==================== 上传内核产物 ====================
+      # 每个内核 artifact 打包为独立命名的刷入 zip 后上传，
+      # 避免多个构建的散文件（Image/anykernel.sh 等）因重名导致 422 already exists
       - name: 上传内核产物
         run: |
-          for file in ./downloaded-artifacts/*_kernel-*/*; do
-            [ -d "$file" ] && continue
-            # 跳过 -Rejects 目录中的文件（已在 collect-rejects 中汇总处理）
-            [[ "$file" == *-Rejects/* ]] && continue
-            echo "上传 $file..."
-            gh release upload "$NEW_TAG" "$file"
+          for dir in ./downloaded-artifacts/*_kernel-*; do
+            [ -d "$dir" ] || continue
+            # 跳过 -Rejects 目录（已在 collect-rejects 中汇总处理）
+            [[ "$dir" == *-Rejects ]] && continue
+            name=$(basename "$dir")
+            echo "打包 ${name}.zip ..."
+            (cd "$dir" && zip -r -q -9 "../${name}.zip" .)
+            echo "上传 ${name}.zip ..."
+            gh release upload "$NEW_TAG" "${name}.zip" \
+              || echo "::warning::上传 ${name}.zip 失败，已跳过（不影响其余产物）"
           done
 
       # ==================== 构建摘要 ====================
