@@ -82,20 +82,6 @@ A commit is a hash string representing the state of a repository at a certain po
 
 > 💡 Artifacts are uploaded as Actions Artifacts by default and are not auto-published as Releases. Failed runs additionally upload build logs (`Build-Logs`) and patch conflict records (`Rejects`) for troubleshooting.
 
-## 📂 Repository Structure
-
-```
-.
-├── .github/workflows/   # Build workflows (per-version + generic + auto-trigger)
-├── config/              # Kernel configurations
-├── data/                # Kernel version JSON data (incl. Android 16)
-├── scripts/             # Helper scripts
-├── security_patch/      # Security patches
-├── zram/                # ZRAM LZ4 patches
-├── hmbird_patch.c       # HMBird kernel type patch
-└── .gitattributes       # Patch file line-ending management
-```
-
 ## 🛠️ Recommended After Installation
 ### 🔧 Xposed Modules
 | Module | Description |
@@ -209,20 +195,6 @@ A commit is a hash string representing the state of a repository at a certain po
    - `boot.img` / `boot-gz.img` / `boot-lz4.img` —— 对应压缩格式的 boot 镜像
 
 > 💡 产物默认上传为 Actions Artifacts，不自动发布 Release；失败时会额外上传构建日志（`Build-Logs`）与补丁冲突记录（`Rejects`）供排查。
-
-## 📂 仓库结构
-
-```
-.
-├── .github/workflows/   # 构建工作流（分版本 + 通用 + 自动触发）
-├── config/              # 内核配置
-├── data/                # 内核版本 JSON 数据（含 Android 16）
-├── scripts/             # 辅助脚本
-├── security_patch/      # 安全补丁
-├── zram/                # ZRAM LZ4 补丁
-├── hmbird_patch.c       # HMBird 内核类型修补
-└── .gitattributes       # 补丁文件换行管理
-```
 
 ## 🛠️ 安装后推荐
 ### 🔧 Xposed 模块
