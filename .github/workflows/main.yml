@@ -609,7 +609,7 @@ jobs:
           |:---|:---|
           | \`*_kernel-*.zip\` | AnyKernel3 内核刷入包 |
           | \`*.img\` | boot、vendor_boot 等镜像文件 |
-          | \`*.apk\` | KernelSU 管理器 |
+          | \`*.apk\` | Root 管理器 |
           | \`susfs-*.zip\` | SUSFS 配套模块 |
 
           > [!IMPORTANT]
@@ -648,7 +648,7 @@ jobs:
 
           推荐模块：https://github.com/sidex15/ksu_module_susfs
 
-          Unicode 零宽绕过修复请使用 Xposed 模块：https://t.me/real5ec1cff/268
+          Unicode 零宽绕过修复请使用 Xposed 模块：https://github.com/5ec1cff/FuseFixer
           EOF
 
       # ==================== 生成版本标签 ====================
