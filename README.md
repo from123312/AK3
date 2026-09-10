@@ -19,7 +19,7 @@
 
 ## 📖 Introduction
 
-This repository is built on [AnyKernel3](https://github.com/osm0sis/AnyKernel3) and uses GitHub Actions to automatically compile **Android GKI kernels** with multiple KernelSU variants and the SUSFS filesystem-hiding solution, plus practical patches such as ZRAM enhancements and brick protection.
+Built upon [AnyKernel3](https://github.com/osm0sis/AnyKernel3), this repository uses GitHub Actions to automatically compile Android GKI kernels. It integrates multiple KernelSU variants and SUSFS kernel-level spoofing solutions, with additional practical patches including ZRAM and BBG.
 
 - The build workflows are adapted from [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) and [Wild Kernels](https://github.com/WildKernels/GKI_KernelSU_SUSFS)
 - Flashing rule: ***It can be flashed as long as the kernel version matches.***
@@ -42,7 +42,7 @@ This repository is built on [AnyKernel3](https://github.com/osm0sis/AnyKernel3) 
 | 🔐 KernelSU Variants | Supports Official / Next / SukiSU / ReSukiSU variants, selectable at build time |
 | 🙈 SUSFS | Kernel-level hiding working with KSU to complete environment spoofing |
 | 💾 ZRAM LZ4 | ZRAM compression algorithm enhancement patch stack |
-| 🛡️ BBG Brick Protection | BBG anti-brick patch to reduce partition corruption risk |
+| 🛡️ BBG antiwipe | BBG anti-brick patch to reduce partition corruption risk |
 | ⚡ KPM | Optional KPM feature / build-time patching |
 | 🔔 Re-Kernel | Optional Re-Kernel driver integration |
 | 🩹 CVE-2026-43499 | Optional automatic application of the rtmutex fix |
@@ -148,7 +148,7 @@ A commit is a hash string representing the state of a repository at a certain po
 
 ## 📖 简介
 
-本仓库基于 [AnyKernel3](https://github.com/osm0sis/AnyKernel3) 构建，通过 GitHub Actions 自动编译 **Android GKI 内核**，集成多种 KernelSU 变体与 SUSFS 文件系统隐藏方案，并附加 ZRAM、防格机等实用补丁。
+本仓库基于 [AnyKernel3](https://github.com/osm0sis/AnyKernel3) 构建，通过 GitHub Actions 自动编译 **Android GKI 内核**，集成多种 KernelSU 变体与 SUSFS 内核级隐藏方案，并附加 ZRAM、BBG等实用补丁。
 
 - 构建工作流修改自 [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) 与 [Wild Kernels](https://github.com/WildKernels/GKI_KernelSU_SUSFS)
 - 刷入规则：***只要内核版本匹配即可刷入***
