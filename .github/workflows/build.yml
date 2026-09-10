@@ -1232,10 +1232,13 @@ jobs:
           mv ../Image ./Image
           zip -r "../$ZIP_NAME" ./*
 
-      - name: 准备 AnyKernel3 目录
+      - name: 创建 AnyKernel3 压缩包 (仅上传模式)
         if: inputs.artifact_upload_mode != '上传全部'
         run: |
           mv ./Image "$ANYKERNEL3/Image"
+          cd "$ANYKERNEL3"
+          ZIP_NAME="${{ inputs.android_version }}-${{ inputs.kernel_version }}.${{ inputs.sub_level }}-${{ inputs.os_patch_level }}-AnyKernel3.zip"
+          zip -r9 "$GITHUB_WORKSPACE/$ZIP_NAME" ./*
 
       - name: 构建 Boot 镜像 (Android 12)
         if: inputs.android_version == 'android12'
@@ -1317,8 +1320,9 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.ksu_variant }}_kernel-${{ env.CONFIG }}-AnyKernel3
-          path: AnyKernel3/*
-          compression-level: 9
+          path: "*-AnyKernel3.zip"
+          if-no-files-found: error
+          compression-level: 0
 
       - name: 上传全部构建产物
         if: inputs.artifact_upload_mode == '上传全部'
