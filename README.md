@@ -105,8 +105,8 @@ A commit is a hash string representing the state of a repository at a certain po
 
 ## 🙏 Acknowledgments
 
-- [osm0sis/AnyKernel3](https://github.com/osm0sis/AnyKernel3) — the universal flashable template
-- [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) / [WildKernels/GKI_KernelSU_SUSFS](https://github.com/WildKernels/GKI_KernelSU_SUSFS) — workflow foundation
+- [osm0sis/AnyKernel3](https://github.com/osm0sis/AnyKernel3)
+- [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) / [WildKernels/GKI_KernelSU_SUSFS](https://github.com/WildKernels/GKI_KernelSU_SUSFS)
 - [KernelSU](https://kernelsu.org/) / [KernelSU-Next](https://kernelsu-next.github.io/webpage/) / [SukiSU](https://sukisu.org/) / [ReSukiSU](https://resukisu.github.io/)
 - [SUSFS](https://gitlab.com/simonpunk/susfs4ksu)
 
@@ -235,8 +235,8 @@ A commit is a hash string representing the state of a repository at a certain po
 
 ## 🙏 致谢
 
-- [osm0sis/AnyKernel3](https://github.com/osm0sis/AnyKernel3) — 通用可刷写模板
-- [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) / [WildKernels/GKI_KernelSU_SUSFS](https://github.com/WildKernels/GKI_KernelSU_SUSFS) — 构建工作流基础
+- [osm0sis/AnyKernel3](https://github.com/osm0sis/AnyKernel3)
+- [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) / [WildKernels/GKI_KernelSU_SUSFS](https://github.com/WildKernels/GKI_KernelSU_SUSFS)
 - [KernelSU](https://kernelsu.org/) / [KernelSU-Next](https://kernelsu-next.github.io/webpage/) / [SukiSU](https://sukisu.org/) / [ReSukiSU](https://resukisu.github.io/)
 - [SUSFS](https://gitlab.com/simonpunk/susfs4ksu)
 
