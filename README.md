@@ -48,7 +48,6 @@ Built upon [AnyKernel3](https://github.com/osm0sis/AnyKernel3), this repository 
 | 🩹 CVE-2026-43499 | Optional automatic application of the rtmutex fix |
 | 📱 OnePlus Snapdragon 8 Elite | Optional support for OnePlus devices with Snapdragon Elite processors |
 | 🐳 Droidspaces | Optional container support with NTSync kernel compatibility patch |
-| 🐦 HMBird Patch | Forces the OPLUS HMBird kernel type `HMBIRD_OGKI → HMBIRD_GKI`, letting custom kernels bypass restrictions |
 
 ## 🔧 Custom Commit Configuration
 
@@ -177,7 +176,6 @@ A commit is a hash string representing the state of a repository at a certain po
 | 🩹 CVE-2026-43499 | 可选自动应用 rtmutex 修复补丁 |
 | 📱 一加 骁龙Elite 支持 | 可选添加一加 骁龙Elite 处理器支持 |
 | 🐳 Droidspaces | 可选容器支持及 NTSync 内核兼容补丁 |
-| 🐦 HMBird Patch | 强制 OPLUS HMBird 内核类型 `HMBIRD_OGKI → HMBIRD_GKI`，让自编内核绕过限制 |
 
 ## 🔧 自定义提交配置
 
