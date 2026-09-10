@@ -103,7 +103,7 @@ A commit is a hash string representing the state of a repository at a certain po
 |:---:|:---|
 | **FuseFixer** | [Unicode zero-width character fix module](https://github.com/5ec1cff/FuseFixer) |
 
-## 🙏 Credits
+## 🙏 Acknowledgments
 
 - [osm0sis/AnyKernel3](https://github.com/osm0sis/AnyKernel3) — the universal flashable template
 - [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) / [WildKernels/GKI_KernelSU_SUSFS](https://github.com/WildKernels/GKI_KernelSU_SUSFS) — workflow foundation
