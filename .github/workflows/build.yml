@@ -445,17 +445,7 @@ jobs:
               ;;
             "Next")
               echo "添加 KernelSU-Next..."
-              if [ "${{ inputs.enable_susfs }}" = "true" ]; then
-                # 官方 KernelSU-Next dev(v3.x) 已移除内置 SUSFS，其驱动缺少 susfs4ksu 联合补丁
-                # 所需的 ksu_handle_* / susfs_ksu_sid / susfs_is_current_ksu_domain 等内核符号，
-                # 链接期必然 undefined symbol，导致 SUSFS 实际打不上。
-                # SUSFS 构建改用 pershoot 维护的 dev-susfs 分支（dev 同源代码 + 内置 SUSFS，
-                # Kconfig 已声明全部 CONFIG_KSU_SUSFS*，与 50_add_susfs 联合补丁完全兼容）。
-                # 仅影响 Next+SUSFS 组合；其他变体与其他开关组合行为不变。
-                curl -LSs "https://raw.githubusercontent.com/pershoot/KernelSU-Next/refs/heads/dev-susfs/kernel/setup.sh" | bash -s dev-susfs
-              else
-                curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/refs/heads/dev/kernel/setup.sh" | bash -s dev
-              fi
+              curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/refs/heads/dev/kernel/setup.sh" | bash -s dev
               ;;
             "SukiSU")
               echo "添加 ${{ inputs.ksu_variant }}..."
@@ -473,11 +463,7 @@ jobs:
               ;;
           esac
 
-          # 新版 KernelSU-Next setup.sh 克隆目录名为 KernelSU-Next，与旧版 KernelSU 兼容
-          if [ -d "KernelSU-Next/.git" ]; then
-            KSU_LATEST_COMMIT_DATE=$(git -C KernelSU-Next log -1 --date=format:'%Y-%m-%d %H:%M:%S %z' --format='%cd')
-            echo "KSU_LATEST_COMMIT_DATE=$KSU_LATEST_COMMIT_DATE" >> $GITHUB_ENV
-          elif [ -d "KernelSU/.git" ]; then
+          if [ -d "KernelSU/.git" ]; then
             KSU_LATEST_COMMIT_DATE=$(git -C KernelSU log -1 --date=format:'%Y-%m-%d %H:%M:%S %z' --format='%cd')
             echo "KSU_LATEST_COMMIT_DATE=$KSU_LATEST_COMMIT_DATE" >> $GITHUB_ENV
           else
@@ -495,31 +481,6 @@ jobs:
           else
             echo "非 Next 变体，跳过 Seccomp 保留补丁"
           fi
-
-      - name: 修复 KernelSU-Next selinux_hide 符号导出（Next + SUSFS）
-        if: inputs.ksu_variant == 'Next' && inputs.enable_susfs
-        working-directory: ${{ env.KERNEL_ROOT }}
-        run: |
-          # 上游 pershoot/KernelSU-Next dev-susfs 的 susfs v2.3.0 提交(1bbf4970)把
-          # 三个 security_*_with_policy 的前向声明改成了 static（kernel/feature/selinux_hide.c
-          # 顶部 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0) 分支），函数定义仍是全局的，
-          # 但编译后符号被收敛为内部链接。而 SUSFS GKI 补丁(50_add_susfs)在
-          # security/selinux/hooks.c 与 selinuxfs.c 中以 extern 引用这三个符号，
-          # 导致 vmlinux 链接期报 undefined symbol（6.6 / 6.12 全矩阵失败）。
-          # 这里去掉三个前向声明的 static，恢复外部链接，与全局定义保持一致。
-          # 仅 Next + SUSFS 组合需要；其他变体不走 KernelSU-Next 目录，不受影响。
-          SELINUX_HIDE="KernelSU-Next/kernel/feature/selinux_hide.c"
-          if [ ! -f "$SELINUX_HIDE" ]; then
-            echo "::warning::未找到 $SELINUX_HIDE，跳过符号导出修复"
-            exit 0
-          fi
-          sed -i -E 's/^static (int security_context_to_sid_with_policy|int security_sid_to_context_with_policy|void security_compute_av_user_with_policy)\(/extern \1(/' "$SELINUX_HIDE"
-          if grep -qE '^static (int security_context_to_sid_with_policy|int security_sid_to_context_with_policy|void security_compute_av_user_with_policy)\(' "$SELINUX_HIDE"; then
-            echo "::error::selinux_hide.c security_*_with_policy 符号导出修复失败，仍存在 static 前向声明"
-            exit 1
-          fi
-          echo "已将 selinux_hide.c 三个 security_*_with_policy 前向声明改为 extern，恢复外部链接"
-
       - name: 修复 SukiSU 内核卸载功能缺失的 setter
         if: inputs.ksu_variant == 'SukiSU'
         working-directory: ${{ env.KERNEL_ROOT }}/KernelSU
@@ -930,8 +891,7 @@ jobs:
 
           if [ "${{ inputs.ksu_variant }}" == "SukiSU" ] || [ "${{ inputs.ksu_variant }}" == "ReSukiSU" ] || [ "${{ inputs.ksu_variant }}" == "Next" ]; then
             if [[ "${{ inputs.use_kpm }}" == enabled* ]] || [[ "${{ inputs.use_kpm }}" == patched* ]]; then
-              # KernelSU-Next 克隆目录名为 KernelSU-Next，一并纳入 KPM 声明检查
-              if ! grep -RqsE '^[[:space:]]*config[[:space:]]+KPM([[:space:]]|$)' common KernelSU KernelSU-Next 2>/dev/null; then
+              if ! grep -RqsE '^[[:space:]]*config[[:space:]]+KPM([[:space:]]|$)' common KernelSU 2>/dev/null; then
                 echo "错误: 已请求启用 KPM，但当前 KernelSU 代码未声明 CONFIG_KPM" >&2
                 exit 1
               fi
@@ -1232,13 +1192,10 @@ jobs:
           mv ../Image ./Image
           zip -r "../$ZIP_NAME" ./*
 
-      - name: 创建 AnyKernel3 压缩包 (仅上传模式)
+      - name: 准备 AnyKernel3 目录
         if: inputs.artifact_upload_mode != '上传全部'
         run: |
           mv ./Image "$ANYKERNEL3/Image"
-          cd "$ANYKERNEL3"
-          ZIP_NAME="${{ inputs.android_version }}-${{ inputs.kernel_version }}.${{ inputs.sub_level }}-${{ inputs.os_patch_level }}-AnyKernel3.zip"
-          zip -r9 "$GITHUB_WORKSPACE/$ZIP_NAME" ./*
 
       - name: 构建 Boot 镜像 (Android 12)
         if: inputs.android_version == 'android12'
@@ -1320,9 +1277,8 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.ksu_variant }}_kernel-${{ env.CONFIG }}-AnyKernel3
-          path: "*-AnyKernel3.zip"
-          if-no-files-found: error
-          compression-level: 0
+          path: AnyKernel3/*
+          compression-level: 9
 
       - name: 上传全部构建产物
         if: inputs.artifact_upload_mode == '上传全部'
