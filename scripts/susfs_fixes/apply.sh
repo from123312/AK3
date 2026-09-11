@@ -117,6 +117,38 @@ fi
 
 patch -p1 < "$SUSFS_PATCH" || true
 
+# 为尚未提供 SU 会话 FD 接口的 SukiSU/ReSukiSU 恢复旧版 exec hook 行为
+EXEC_HELPER=""
+if [[ "$KSU_VARIANT" == SukiSU* || "$KSU_VARIANT" == "ReSukiSU" ]]; then
+  if grep -qF 'ksu_install_su_fd();' fs/exec.c; then
+    EXEC_HELPER="ksu_install_su_fd"
+  elif grep -qF 'ksu_handle_post_execveat_sucompat(' fs/exec.c; then
+    EXEC_HELPER="ksu_handle_post_execveat_sucompat"
+  fi
+fi
+if [[ -n "$EXEC_HELPER" ]] \
+  && ! grep -RqsE --include='*.c' "^[[:space:]]*int[[:space:]]+${EXEC_HELPER}[[:space:]]*\(" "$KERNEL_ROOT/KernelSU/kernel"; then
+  echo "$KSU_VARIANT 尚未提供 $EXEC_HELPER，恢复旧版 exec hook"
+  sed -i '/^extern int ksu_install_su_fd(void);$/d' fs/exec.c
+  sed -i '/^extern int ksu_handle_post_execveat_sucompat(/,+1d' fs/exec.c
+  sed -i 's/is_su_session = !\(ksu_handle_execveat[^;]*;\)/\1/' fs/exec.c
+  sed -i '/^[[:space:]]*bool is_su_session = false;$/d' fs/exec.c
+  sed -i '/^[[:space:]]*if (unlikely(is_su_session && retval >= 0))$/,+1d' fs/exec.c
+  sed -i '/^[[:space:]]*if (unlikely(is_su_session))$/,+1d' fs/exec.c
+  sed -i '/^#ifdef CONFIG_KSU_SUSFS$/N;/^#ifdef CONFIG_KSU_SUSFS\n#endif \/\/ #ifdef CONFIG_KSU_SUSFS$/d' fs/exec.c
+  if grep -qE 'ksu_install_su_fd|ksu_handle_post_execveat_sucompat|is_su_session' fs/exec.c; then
+    echo "::error::$KSU_VARIANT exec hook 结构已变化，无法完成兼容修复"
+    exit 1
+  fi
+fi
+
+# 在编译前报告 SUSFS 主补丁产生的冲突文件
+SUSFS_REJ_COUNT=$(find . -name '*.rej' | wc -l)
+if [ "$SUSFS_REJ_COUNT" -gt 0 ]; then
+  echo "::warning title=SUSFS 补丁冲突::SUSFS 主补丁产生了 ${SUSFS_REJ_COUNT} 个 .rej 冲突文件，可能导致后续编译失败（详见 Rejects 产物）"
+  find . -name '*.rej' -print
+fi
+
 # 还原仅用于补丁匹配的临时源码调整
 if [[ "$ANDROID_VERSION" == "android12" && "$KERNEL_VERSION" == "5.10" ]]; then
   if [[ -n "$LEGACY_SUKISU_CONFIG" && "$CURRENT_SUB" -le 43 ]]; then
@@ -217,6 +249,26 @@ if [[ "$ANDROID_VERSION" == "android14" && "$KERNEL_VERSION" == "6.1" ]]; then
   fix_task_mmu_show_pad 75 "2024-05"
 fi
 
+# Android 15 - 6.6 修复
+if [[ "$ANDROID_VERSION" == "android15" && "$KERNEL_VERSION" == "6.6" ]]; then
+  # 修复老版 SukiSU 6.6.50~6.6.58: task_mmu.c 打入 SUSFS 后使用 vma，但旧源码没有对应声明
+  if [[ -n "$LEGACY_SUKISU_CONFIG" && "$CURRENT_SUB" -ge 50 && "$CURRENT_SUB" -le 58 ]] \
+    && grep -qF 'vma = find_vma(mm, start_vaddr);' ./fs/proc/task_mmu.c; then
+    TASK_MMU_PATCH="$KERNEL_PATCHES/wild/archived/susfs_fix_patches/v2.1.0/a15-6.6/task_mmu.c.patch"
+    if [ ! -f "$TASK_MMU_PATCH" ]; then
+      echo "::error::补丁不存在: $TASK_MMU_PATCH"
+      exit 1
+    fi
+    cp "$TASK_MMU_PATCH" ./
+    if patch -p1 --dry-run < task_mmu.c.patch >/dev/null 2>&1; then
+      patch -p1 --no-backup-if-mismatch < task_mmu.c.patch
+      echo "已应用 Android 15 6.6.50~6.6.58 task_mmu.c 归档修复补丁"
+    else
+      echo "Android 15 6.6.50~6.6.58 task_mmu.c 归档修复补丁已应用或当前上下文不匹配，跳过"
+    fi
+  fi
+fi
+
 # Android 16 - 6.12 修复
 if [[ "$ANDROID_VERSION" == "android16" && "$KERNEL_VERSION" == "6.12" ]]; then
   # 固定旧版 SukiSU 在 6.12 上会重复定义 setresuid hook
@@ -226,62 +278,4 @@ if [[ "$ANDROID_VERSION" == "android16" && "$KERNEL_VERSION" == "6.12" ]]; then
     sed -i 's/defined(CONFIG_KSU_MANUAL_HOOK))/!defined(CONFIG_KSU_SUSFS) \&\& defined(CONFIG_KSU_MANUAL_HOOK))/' "$SETUID_HOOK"
     echo "已修复 setuid_hook.c 重复定义问题"
   fi
-
-  # 修复 6.12 getname_flags 三参数调用（ACK 6.12 声明为 2 参数）
-  if grep -qF 'getname_flags(filename, lookup_flags, NULL)' ./fs/open.c; then
-    sed -i 's/getname_flags(filename, lookup_flags, NULL)/getname_flags(filename, lookup_flags)/' ./fs/open.c
-    echo "已修复 fs/open.c getname_flags 三参数问题"
-  fi
-fi
-
-# 修复 6.12 super_access.c: netlink_kernel_cfg.cb_mutex 已移除
-SUPER_ACCESS="$KERNEL_ROOT/common/drivers/kernelsu/kpm/super_access.c"
-if [ -f "$SUPER_ACCESS" ] && grep -q 'DEFINE_MEMBER(netlink_kernel_cfg, cb_mutex)' "$SUPER_ACCESS"; then
-  sed -i '/DEFINE_MEMBER(netlink_kernel_cfg, cb_mutex)/i #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 12, 0)' "$SUPER_ACCESS"
-  sed -i '/DEFINE_MEMBER(netlink_kernel_cfg, cb_mutex)/a #endif' "$SUPER_ACCESS"
-  echo "已修复 super_access.c cb_mutex 6.12 兼容"
-fi
-
-# 修复 6.12+ lsm_hook.c: security_add_hooks 第三参数由 char* 变为 const struct lsm_id*
-# struct lsm_id 仅 6.8+ 内核存在，老内核 (5.10~6.6) 仍是 char*，必须按内核版本门控，
-# 否则老内核编译报 "variable has incomplete type 'struct lsm_id'"
-LSM_HOOK="$KERNEL_ROOT/common/drivers/kernelsu/hook/lsm_hook.c"
-KVER_MAJOR=$(sed -n 's/^VERSION = \([0-9]\{1,\}\)$/\1/p' "$KERNEL_ROOT/common/Makefile" | head -n1)
-KVER_MINOR=$(sed -n 's/^PATCHLEVEL = \([0-9]\{1,\}\)$/\1/p' "$KERNEL_ROOT/common/Makefile" | head -n1)
-if [ -n "$KVER_MAJOR" ] && [ -n "$KVER_MINOR" ] \
-  && { [ "$KVER_MAJOR" -gt 6 ] || { [ "$KVER_MAJOR" -eq 6 ] && [ "$KVER_MINOR" -ge 8 ]; }; } \
-  && [ -f "$LSM_HOOK" ] && grep -q 'security_add_hooks.*"ksu"' "$LSM_HOOK"; then
-  sed -i 's/security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), "ksu")/security_add_hooks(ksu_hooks, ARRAY_SIZE(ksu_hooks), \&(struct lsm_id){"ksu", 0})/' "$LSM_HOOK"
-  echo "已修复 lsm_hook.c security_add_hooks 兼容 (内核 $KVER_MAJOR.$KVER_MINOR)"
-fi
-
-# SUSFS GKI 补丁在 fs/exec.c 注入的钩子会调用 ksu_install_su_fd()，
-# 该符号仅 KernelSU 官方版 (supercall.c) 提供，SukiSU/ReSukiSU 缺失会导致 vmlinux 链接失败；
-# SukiSU 系变体的提权已在 ksu_handle_execveat_sucompat() 内部完成，无需单独安装 su fd，
-# 这里仅在符号缺失时注入空实现以满足链接
-if [ -f "$KERNEL_ROOT/common/fs/exec.c" ] && grep -qF 'ksu_install_su_fd' "$KERNEL_ROOT/common/fs/exec.c"; then
-  for KSU_SRC_DIR in "$KERNEL_ROOT/KernelSU" "$KERNEL_ROOT/KernelSU-Next"; do
-    [ -d "$KSU_SRC_DIR/kernel" ] || continue
-    if grep -rqs 'int ksu_install_su_fd(void)' "$KSU_SRC_DIR/kernel"; then
-      continue
-    fi
-    STUB_TARGET=$(grep -rls 'int ksu_handle_execveat_sucompat' "$KSU_SRC_DIR/kernel" --include='*.c' | head -n1)
-    if [ -z "$STUB_TARGET" ]; then
-      echo "::warning::未在 $KSU_SRC_DIR 中定位 ksu_handle_execveat_sucompat 定义，跳过 ksu_install_su_fd 注入"
-      continue
-    fi
-    cat >> "$STUB_TARGET" <<'KSU_STUB_EOF'
-
-/*
- * SUSFS GKI 补丁 (fs/exec.c) 引用的符号：仅 KernelSU 官方版 (supercall.c) 提供。
- * SukiSU 系变体的提权在 ksu_handle_execveat_sucompat() 内部完成，
- * 无需单独安装 su fd，这里提供空实现仅用于满足链接。
- */
-int ksu_install_su_fd(void)
-{
-	return 0;
-}
-KSU_STUB_EOF
-    echo "已向 $STUB_TARGET 注入 ksu_install_su_fd 兼容实现"
-  done
 fi
