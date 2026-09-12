@@ -1188,7 +1188,7 @@ jobs:
         if: inputs.artifact_upload_mode == '上传全部'
         run: |
           cd "$ANYKERNEL3"
-          ZIP_NAME="${{ inputs.ksu_variant }}_${{ inputs.android_version }}-${{ inputs.kernel_version }}.${{ inputs.sub_level }}-${{ inputs.os_patch_level }}-AnyKernel3.zip"
+          ZIP_NAME="${{ inputs.android_version }}-${{ inputs.kernel_version }}.${{ inputs.sub_level }}-${{ inputs.os_patch_level }}-AnyKernel3.zip"
           mv ../Image ./Image
           zip -r "../$ZIP_NAME" ./*
 
@@ -1278,7 +1278,7 @@ jobs:
         if: inputs.artifact_upload_mode != '上传全部'
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ inputs.ksu_variant }}_kernel-${{ env.CONFIG }}-${{ inputs.os_patch_level }}-AnyKernel3
+          name: ${{ inputs.ksu_variant }}_kernel-${{ env.CONFIG }}-AnyKernel3
           path: "AnyKernel3-package/*"
           if-no-files-found: error
           compression-level: 0
@@ -1287,7 +1287,7 @@ jobs:
         if: inputs.artifact_upload_mode == '上传全部'
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ inputs.ksu_variant }}_kernel-${{ env.CONFIG }}-${{ inputs.os_patch_level }}
+          name: ${{ inputs.ksu_variant }}_kernel-${{ env.CONFIG }}
           path: |
             *AnyKernel3.zip
             *.img
