@@ -1281,7 +1281,7 @@ jobs:
           name: ${{ inputs.ksu_variant }}_kernel-${{ env.CONFIG }}-AnyKernel3
           path: "AnyKernel3-package/*"
           if-no-files-found: error
-          compression-level: 0
+          compression-level: 9
 
       - name: 上传全部构建产物
         if: inputs.artifact_upload_mode == '上传全部'
