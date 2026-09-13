@@ -715,22 +715,24 @@ jobs:
       # ==================== 上传内核产物 ====================
       - name: 上传内核产物
         run: |
-          # 兼容无套娃 artifact：目录内没有 zip（仅上传模式为散装刷入内容）时，
-          # 先打成一个完整 AnyKernel3 刷入包再上传，避免 Release 出现散文件
+          # 仅上传模式的 artifact 为散装刷入内容：打成完整 AnyKernel3 包后只上传 zip，
+          # 避免多版本同名散文件（Image/anykernel.sh...）在 Release 上冲突报错；
+          # 上传全部模式（目录内已有 zip + img）保持逐文件上传，互不影响。
+          # --clobber 保证 job 重跑时同名资产覆盖而非报错。
           for dir in ./downloaded-artifacts/*_kernel-*/; do
             [ -d "$dir" ] || continue
             [[ "$dir" == *-Rejects/ ]] && continue
             if ! ls "$dir"*.zip >/dev/null 2>&1; then
               (cd "$dir" && zip -r -q -9 "$(basename "$dir").zip" .)
-              echo "已打包: $(basename "$dir").zip"
+              echo "上传 $(basename "$dir").zip..."
+              gh release upload "$NEW_TAG" "$dir/$(basename "$dir").zip" --clobber
+            else
+              for file in "$dir"*; do
+                [ -f "$file" ] || continue
+                echo "上传 $file..."
+                gh release upload "$NEW_TAG" "$file" --clobber
+              done
             fi
-          done
-          for file in ./downloaded-artifacts/*_kernel-*/*; do
-            [ -d "$file" ] && continue
-            # 跳过 -Rejects 目录中的文件（已在 collect-rejects 中汇总处理）
-            [[ "$file" == *-Rejects/* ]] && continue
-            echo "上传 $file..."
-            gh release upload "$NEW_TAG" "$file"
           done
 
       # ==================== 构建摘要 ====================
