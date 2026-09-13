@@ -715,6 +715,16 @@ jobs:
       # ==================== 上传内核产物 ====================
       - name: 上传内核产物
         run: |
+          # 兼容无套娃 artifact：目录内没有 zip（仅上传模式为散装刷入内容）时，
+          # 先打成一个完整 AnyKernel3 刷入包再上传，避免 Release 出现散文件
+          for dir in ./downloaded-artifacts/*_kernel-*/; do
+            [ -d "$dir" ] || continue
+            [[ "$dir" == *-Rejects/ ]] && continue
+            if ! ls "$dir"*.zip >/dev/null 2>&1; then
+              (cd "$dir" && zip -r -q -9 "$(basename "$dir").zip" .)
+              echo "已打包: $(basename "$dir").zip"
+            fi
+          done
           for file in ./downloaded-artifacts/*_kernel-*/*; do
             [ -d "$file" ] && continue
             # 跳过 -Rejects 目录中的文件（已在 collect-rejects 中汇总处理）
