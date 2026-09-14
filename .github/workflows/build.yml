@@ -376,11 +376,11 @@ jobs:
             fi
           fi
 
-      - name: 添加一加 骁龙8 Elite 处理器支持
+      - name: 添加一加 骁龙8 Elite/Gen5 处理器支持
         if: inputs.supp_op
         working-directory: ${{ env.KERNEL_ROOT }}/common/drivers
         run: |
-          echo "下载一加 骁龙8 Elite 支持补丁..."
+          echo "下载一加 骁龙8 Elite/Gen5 支持补丁..."
           curl -LSs "https://github.com/zzh20188/GKI_KernelSU_SUSFS/raw/refs/heads/dev/hmbird_patch.c" -o hmbird_patch.c
           echo "obj-y += hmbird_patch.o" >> Makefile
 

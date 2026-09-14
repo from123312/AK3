@@ -109,7 +109,7 @@ on:
         type: boolean
         default: false
       supp_op:
-        description: "启用一加 骁龙8 Elite 支持"
+        description: "启用 一加 骁龙8 Elite/Gen5 支持"
         required: false
         type: boolean
         default: false
