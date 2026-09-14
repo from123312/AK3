@@ -87,7 +87,7 @@ on:
 
       # ==================== 功能开关 ====================
       use_zram:
-        description: "启用 ZRAM 增强算法"
+        description: "启用 ZRAM 压缩算法"
         type: boolean
         default: false
       use_bbg:
