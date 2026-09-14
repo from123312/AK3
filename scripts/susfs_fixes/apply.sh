@@ -115,6 +115,15 @@ if [[ "$ANDROID_VERSION" == "android16" && "$KERNEL_VERSION" == "6.12" ]]; then
   fi
 fi
 
+# 新版内核在 super.c 的 internal.h 之后新增了 trace/hooks/fs.h，
+# 与 SUSFS 主补丁的上下文不符，会导致 extern 声明整段被拒绝
+SUPER_FS_H_REMOVED=""
+if grep -qF '#include <trace/hooks/fs.h>' fs/super.c; then
+  echo "临时调整 super.c 上下文"
+  sed -i '/^#include <trace\/hooks\/fs.h>$/,+1d' fs/super.c
+  SUPER_FS_H_REMOVED=1
+fi
+
 patch -p1 < "$SUSFS_PATCH" || true
 
 # 为尚未提供 SU 会话 FD 接口的 SukiSU/ReSukiSU 恢复旧版 exec hook 行为
@@ -213,6 +222,12 @@ if [[ "$ANDROID_VERSION" == "android16" && "$KERNEL_VERSION" == "6.12" ]]; then
   fi
 fi
 
+if [[ -n "$SUPER_FS_H_REMOVED" ]] \
+  && ! grep -qF '#include <trace/hooks/fs.h>' fs/super.c; then
+  echo "还原 super.c 临时调整"
+  sed -i '/^#include "internal.h"$/a #include <trace/hooks/fs.h>' fs/super.c
+fi
+
 fix_missing_vm_flags_clear() {
   if [[ "$OS_PATCH_LEVEL" == "2024-11" ]] && grep -qF 'vm_flags_clear(new_vma, VM_PAD_MASK);' ./mm/mmap.c; then
     sed -i 's/vm_flags_clear(new_vma, VM_PAD_MASK);/new_vma->vm_flags \&= ~VM_PAD_MASK;/' ./mm/mmap.c
@@ -238,7 +253,7 @@ if [[ "$ANDROID_VERSION" == "android12" && "$KERNEL_VERSION" == "5.10" ]]; then
 fi
 
 # Android 13 - 5.15 修复
-if [[ "$ANDROID_VERSION" == "android13" && "$KERNEL_VERSION" == "5.15" ]]; then
+  if [[ "$ANDROID_VERSION" == "android13" && "$KERNEL_VERSION" == "5.15" ]]; then
   # 修复 2024-11 分支: mmap.c 调用了 vm_flags_clear()，但同分支 mm.h 未提供 helper
   fix_missing_vm_flags_clear
   fix_task_mmu_show_pad 148 "2024-05"
