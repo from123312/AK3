@@ -105,7 +105,7 @@ jobs:
           echo "KSU 变体      : ${{ inputs.ksu_variant }}"
           echo "构建时间      : ${{ inputs.build_time }}"
           echo "SUSFS 状态    : ${{ inputs.enable_susfs }}"
-          echo "ZRAM 增强     : ${{ inputs.use_zram }}"
+          echo "ZRAM 压缩     : ${{ inputs.use_zram }}"
           echo "BBG 补丁      : ${{ inputs.use_bbg }}"
           echo "KPM 功能      : ${{ inputs.use_kpm }}"
           echo "Re-Kernel     : ${{ inputs.use_rekernel }}"
@@ -376,11 +376,11 @@ jobs:
             fi
           fi
 
-      - name: 添加一加 8E 处理器支持
+      - name: 添加一加 骁龙8 Elite 处理器支持
         if: inputs.supp_op
         working-directory: ${{ env.KERNEL_ROOT }}/common/drivers
         run: |
-          echo "下载一加 8E 支持补丁..."
+          echo "下载一加 骁龙8 Elite 支持补丁..."
           curl -LSs "https://github.com/zzh20188/GKI_KernelSU_SUSFS/raw/refs/heads/dev/hmbird_patch.c" -o hmbird_patch.c
           echo "obj-y += hmbird_patch.o" >> Makefile
 
