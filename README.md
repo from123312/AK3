@@ -19,7 +19,7 @@
 
 ## 📖 Introduction
 
-Built upon [AnyKernel3](https://github.com/osm0sis/AnyKernel3), this repository uses GitHub Actions to automatically compile Android GKI kernels. It integrates multiple KernelSU variants and SUSFS kernel-level spoofing solutions, with additional practical patches including ZRAM and BBG.
+Built upon [AnyKernel3](https://github.com/osm0sis/AnyKernel3), this repository uses GitHub Actions to automatically compile Android GKI kernels. It integrates multiple KernelSU variants and SUSFS kernel-level spoofing solutions Add practical patches such as ZRAM and BBG.
 
 - The build workflows are adapted from [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) and [Wild Kernels](https://github.com/WildKernels/GKI_KernelSU_SUSFS)
 - Flashing rule: ***It can be flashed as long as the kernel version matches.***
@@ -41,12 +41,12 @@ Built upon [AnyKernel3](https://github.com/osm0sis/AnyKernel3), this repository 
 |:---|:---|
 | 🔐 KernelSU Variants | Supports Official / Next / SukiSU / ReSukiSU variants, selectable at build time |
 | 🙈 SUSFS | Kernel-level hiding working with KSU to complete environment spoofing |
-| 💾 ZRAM LZ4 | ZRAM compression algorithm enhancement patch stack |
+| 💾 ZRAM LZ4 | ZRAM Compression Algorithm Patch |
 | 🛡️ BBG antiwipe | BBG anti-brick patch to reduce partition corruption risk |
 | ⚡ KPM | Optional KPM feature / build-time patching |
 | 🔔 Re-Kernel | Optional Re-Kernel driver integration |
 | 🩹 CVE-2026-43499 | Optional automatic application of the rtmutex fix |
-| 📱 OnePlus Snapdragon 8 Elite | Optional support for OnePlus devices with Snapdragon Elite processors |
+| 📱 OnePlus Snapdragon 8 Elite Support | Optional Add support for OnePlus Snapdragon 8 Elite processor |
 | 🐳 Droidspaces | Optional container support with NTSync kernel compatibility patch |
 
 ## 🔧 Custom Commit Configuration
@@ -133,7 +133,7 @@ A commit is a hash string representing the state of a repository at a certain po
 
 ## 📖 简介
 
-本仓库基于 [AnyKernel3](https://github.com/osm0sis/AnyKernel3) 构建，通过 GitHub Actions 自动编译 **Android GKI 内核**，集成多种 KernelSU 变体与 SUSFS 内核级隐藏方案，并附加 ZRAM、BBG等实用补丁。
+本仓库基于 [AnyKernel3](https://github.com/osm0sis/AnyKernel3) 构建，通过 GitHub Actions 自动编译 **Android GKI 内核**，集成多种 KernelSU 变体与 SUSFS 内核级隐藏方案并附加 ZRAM、BBG等实用补丁。
 
 - 构建工作流修改自 [zzh20188/GKI_KernelSU_SUSFS](https://github.com/zzh20188/GKI_KernelSU_SUSFS) 与 [Wild Kernels](https://github.com/WildKernels/GKI_KernelSU_SUSFS)
 - 刷入规则：***只要内核版本匹配即可刷入***
@@ -155,12 +155,12 @@ A commit is a hash string representing the state of a repository at a certain po
 |:---|:---|
 | 🔐 KernelSU 全家桶 | 支持 Official / Next / SukiSU / ReSukiSU 四种变体，构建时按需选择 |
 | 🙈 SUSFS | 内核级隐藏，配合 KSU 完成环境伪装 |
-| 💾 ZRAM LZ4 | ZRAM 压缩算法增强补丁栈 |
+| 💾 ZRAM LZ4 | ZRAM 压缩算法补丁 |
 | 🛡️ BBG 防格机 | 添加 BBG 防格机补丁，降低分区损坏风险 |
 | ⚡ KPM | 可选开启 KPM 功能 / 构建期修补 |
 | 🔔 Re-Kernel | 可选集成 Re-Kernel 驱动 |
 | 🩹 CVE-2026-43499 | 可选自动应用 rtmutex 修复补丁 |
-| 📱 一加 骁龙Elite 支持 | 可选添加一加 骁龙Elite 处理器支持 |
+| 📱 一加 骁龙8 Elite 支持 | 可选添加一加 骁龙8 Elite 处理器支持 |
 | 🐳 Droidspaces | 可选容器支持及 NTSync 内核兼容补丁 |
 
 ## 🔧 自定义提交配置
@@ -192,7 +192,7 @@ A commit is a hash string representing the state of a repository at a certain po
 4. [安全补丁级别](https://zzh20188.github.io/GKI_KernelSU_SUSFS/index.html)
 5. 构建完成后，在本次运行页面下载 **Artifacts**：
    - `AnyKernel3.zip` —— 卡刷包（推荐，配合自定义 Recovery 或 KSU 刷入）
-   - `boot.img` / `boot-gz.img` / `boot-lz4.img` —— 对应压缩格式的 boot 镜像
+   - `boot.img` / `boot-gz.img` / `boot-lz4.img` —— 每种压缩格式的 boot 镜像
 
 > 💡 产物默认上传为 Actions Artifacts，不自动发布 Release；失败时会额外上传构建日志（`Build-Logs`）与补丁冲突记录（`Rejects`）供排查。
 
